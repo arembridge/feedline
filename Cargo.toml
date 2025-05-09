@@ -2,5 +2,9 @@
 name = "feedline"
 version = "0.1.0"
 edition = "2024"
+description = "A CLI tool that appends a newline to all specified files"
+license = "MIT"
+repository = "https://github.com/yourusername/feedline"
+
 
 [dependencies]
