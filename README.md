@@ -4,6 +4,18 @@
 
 Provide a list of files and this tool will ensure there is an empty line at the end of each file.  Simples.
 
+### Example
+
+```diff
+def main():
+    pass
+
+if __name__=="__main__":
+    main()
+- no newline
++
+```
+
 ## Usage
 
 Provide a single file to reformat:
