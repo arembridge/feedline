@@ -21,15 +21,15 @@ jobs:
         with:
           toolchain: stable
 
-      - name: Build binary
+      - name: Build release binary
         run: cargo build --release
 
-      - name: Rename binary with version
+      - name: Prepare binary for release
         run: |
-          mkdir dist
+          mkdir -p dist
           cp target/release/feedline dist/feedline-macos
 
-      - name: Create GitHub Release
+      - name: Upload binary to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: dist/feedline-macos
