@@ -1,5 +1,5 @@
 // Verbosity levels
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum Verbosity {
     QUIET,
     NORMAL,

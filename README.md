@@ -40,6 +40,12 @@ find ./src/ -type f | feedline
 git diff --name-only main | feedline
 ```
 
+Filter the results you care about:
+
+```bash
+ls | feedline --no-color | grep '^SKIP'
+```
+
 ## Installation
 
 ### Manual installation

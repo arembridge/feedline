@@ -1,18 +1,17 @@
+mod args;
 mod colors;
-mod config;
-mod help;
-mod io;
+mod feedline;
+mod print;
 mod verbosity;
 
-use crate::config::parse_args;
-use crate::io::{collect_files, process_files};
+use crate::feedline::fix_files;
+use crate::print::print_results;
+use args::parse_args;
 
 fn main() {
-    let config = parse_args();
-    let file_list = collect_files(&config.files);
-    let has_errors = process_files(file_list, config.verbosity);
+    let command_args = parse_args();
 
-    if has_errors {
-        std::process::exit(1);
-    }
+    let results = fix_files(command_args.files.clone());
+
+    print_results(&command_args, results);
 }
