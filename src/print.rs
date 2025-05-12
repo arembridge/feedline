@@ -1,73 +1,51 @@
-use crate::args::{ColorOption, CommandArgs};
-use crate::colors::{GREEN, RED, RESET, YELLOW};
-use crate::feedline::{FeedlineResult, STATUS};
+use crate::args::ColorOption;
 use crate::verbosity::Verbosity;
+use colored::{ColoredString, Colorize};
+use std::io::{self, IsTerminal};
 
-fn get_status_color(status: STATUS) -> String {
-    match status {
-        STATUS::SUCCESS => GREEN.to_string(),
-        STATUS::SKIP => YELLOW.to_string(),
-        STATUS::WARN => YELLOW.to_string(),
-        STATUS::ERROR => RED.to_string(),
-    }
+#[derive(Debug, Clone)]
+pub struct Printer {
+    pub use_color: bool,
+    pub verbosity_level: Verbosity,
 }
 
-pub fn print_results(command_args: &CommandArgs, mut results: Vec<FeedlineResult>) {
-    // Do not report on SUCCESS/SKIP/WARN if verbosity is quiet
-    if command_args.verbosity == Verbosity::QUIET {
-        results = results
-            .into_iter()
-            .filter(|result| {
-                result.status != STATUS::SUCCESS
-                    && result.status != STATUS::SKIP
-                    && result.status != STATUS::WARN
-            })
-            .collect();
-    }
-
-    // Print CommandArgs if verbosity is verbose
-    if command_args.verbosity == Verbosity::VERBOSE {
-        let verbosity_string = if command_args.color == ColorOption::ALWAYS {
-            format!("{YELLOW}verbosity:{RESET} {:?}", command_args.verbosity)
-        } else {
-            format!("verbosity: {:?}", command_args.verbosity)
+impl Printer {
+    pub fn new(color_option: &ColorOption, verbosity_level: Verbosity) -> Self {
+        let use_color = match color_option {
+            ColorOption::ALWAYS => true,
+            ColorOption::NEVER => false,
+            ColorOption::AUTO => io::stdout().is_terminal(),
         };
-        println!("{}", verbosity_string);
-
-        let files_string = if command_args.color == ColorOption::ALWAYS {
-            format!("{YELLOW}files:{RESET}")
-        } else {
-            format!("files:")
+        let verbosity_level = match verbosity_level {
+            Verbosity::VERBOSE => Verbosity::VERBOSE,
+            Verbosity::NORMAL => Verbosity::NORMAL,
+            Verbosity::QUIET => Verbosity::QUIET,
         };
-        println!("{}", files_string);
-        for file in &command_args.files {
-            println!("\t{}", file);
+        Self {
+            use_color,
+            verbosity_level,
         }
     }
 
-    // Sort results by status, then alphabetical (if enabled)
-    if command_args.sort {
-        results.sort_by(|a, b| a.cmp(b));
-    }
+    pub fn print(&self, message_parts: Vec<ColoredString>, message_max_verbosity: Verbosity) {
+        if message_max_verbosity > self.verbosity_level {
+            return;
+        }
 
-    for result in results {
-        let terminal_color = get_status_color(result.status);
-        let status = if command_args.color == ColorOption::ALWAYS {
-            format!("{}{:?}{}", terminal_color, result.status, RESET)
+        if self.use_color {
+            let joined_string = message_parts
+                .into_iter()
+                .map(|item| item.to_string())
+                .collect::<Vec<_>>()
+                .join(" ");
+            println!("{}", joined_string);
         } else {
-            format!("{:?}", result.status)
-        };
-
-        match result.message {
-            Some(m) => {
-                let message = if command_args.color == ColorOption::ALWAYS {
-                    format!("{}({}){}", terminal_color, m, RESET)
-                } else {
-                    format!("({:?})", m)
-                };
-                println!("{} {} {}", status, result.file, message)
-            }
-            _ => println!("{} {}", status, result.file),
+            let joined_string = message_parts
+                .into_iter()
+                .map(|item| item.normal().clear().to_string())
+                .collect::<Vec<_>>()
+                .join(" ");
+            println!("{}", joined_string);
         }
     }
 }
