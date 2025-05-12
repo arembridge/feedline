@@ -43,7 +43,7 @@ git diff --name-only main | feedline
 Filter the results you care about:
 
 ```bash
-ls | feedline --no-color | grep '^SKIP'
+ls | feedline --color=NEVER | grep '^SKIP'
 ```
 
 ## Installation
