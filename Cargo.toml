@@ -8,6 +8,6 @@ repository = "https://github.com/yourusername/feedline"
 
 
 [dependencies]
-atty = "0.2.14"
 clap = { version = "4.5.37", features = ["derive"] }
+colored = "3.0.0"
 colorize = "0.1.0"

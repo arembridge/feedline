@@ -1,43 +1,10 @@
+use crate::status::STATUS;
+use crate::feedline_result::FeedlineResult;
 use std::{
-    cmp::Ordering,
     fs::OpenOptions,
     io::{Read, Seek, SeekFrom, Write},
     path::Path,
 };
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum STATUS {
-    SUCCESS,
-    WARN,
-    SKIP,
-    ERROR,
-}
-
-impl PartialOrd for STATUS {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for STATUS {
-    fn cmp(&self, other: &Self) -> Ordering {
-        use STATUS::*;
-        let rank = |s| match s {
-            SUCCESS => 0,
-            WARN => 1,
-            SKIP => 2,
-            ERROR => 3,
-        };
-        rank(*self).cmp(&rank(*other))
-    }
-}
-
-#[derive(Clone, Eq, PartialEq, Debug, Ord, PartialOrd)]
-pub struct FeedlineResult {
-    pub status: STATUS,
-    pub file: String,
-    pub message: Option<String>,
-}
 
 fn ensure_feedline(filepath: &str) -> Result<FeedlineResult, std::io::Error> {
     let mut file = OpenOptions::new().read(true).write(true).open(filepath)?;
