@@ -27,7 +27,7 @@ fn main() {
                 .clone() // Fix clone
                 .into_iter()
                 .map(|item| item.normal())
-                .collect()
+                .collect(),
         ]
         .concat(),
         Verbosity::VERBOSE,
