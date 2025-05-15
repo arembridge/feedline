@@ -5,6 +5,8 @@ mod print;
 mod status;
 mod verbosity;
 
+use std::io::{self, IsTerminal};
+
 use colored::Colorize;
 
 use verbosity::Verbosity;
@@ -17,7 +19,7 @@ fn main() {
     let command_args = parse_args();
     let printer = print::Printer::new(&command_args.color, command_args.verbosity.clone());
 
-    printer.print(
+    printer.eprint(
         vec![
             vec!["files: ".blue()],
             command_args
@@ -25,23 +27,23 @@ fn main() {
                 .clone() // Fix clone
                 .into_iter()
                 .map(|item| item.normal())
-                .collect()
+                .collect(),
         ]
         .concat(),
         Verbosity::VERBOSE,
     );
-    printer.print(
+    printer.eprint(
         vec!["color: ".blue(), command_args.color.get_colored_message()],
         Verbosity::VERBOSE,
     );
-    printer.print(
+    printer.eprint(
         vec![
             "verbosity: ".blue(),
             command_args.verbosity.get_colored_message(),
         ],
         Verbosity::VERBOSE,
     );
-    printer.print(
+    printer.eprint(
         vec![
             "sort: ".blue(),
             match command_args.sort {
@@ -68,9 +70,12 @@ fn main() {
             continue;
         };
         let message_parts = result.get_message_parts();
-        printer.print(
-            message_parts,
-            verbosity_min,
-        );
+        printer.eprint(message_parts, verbosity_min);
+    }
+
+    if !io::stdout().is_terminal() {
+        for file in command_args.files {
+            printer.print(vec![file.into()], Verbosity::QUIET);
+        }
     }
 }

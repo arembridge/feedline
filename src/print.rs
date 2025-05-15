@@ -48,4 +48,26 @@ impl Printer {
             println!("{}", joined_string);
         }
     }
+
+    pub fn eprint(&self, message_parts: Vec<ColoredString>, message_max_verbosity: Verbosity) {
+        if message_max_verbosity > self.verbosity_level {
+            return;
+        }
+
+        if self.use_color {
+            let joined_string = message_parts
+                .into_iter()
+                .map(|item| item.to_string())
+                .collect::<Vec<_>>()
+                .join(" ");
+            eprintln!("{}", joined_string);
+        } else {
+            let joined_string = message_parts
+                .into_iter()
+                .map(|item| item.normal().clear().to_string())
+                .collect::<Vec<_>>()
+                .join(" ");
+            eprintln!("{}", joined_string);
+        }
+    }
 }
