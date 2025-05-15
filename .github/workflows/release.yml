@@ -1,4 +1,4 @@
-name: Release macOS binary
+name: Release binaries
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  build-and-release-macos:
     runs-on: macos-latest
 
     steps:
@@ -33,5 +33,32 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist/feedline-macos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-release-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Prepare binary for release
+        run: |
+          mkdir -p dist
+          cp target/release/feedline dist/feedline-linux
+
+      - name: Upload binary to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/feedline-linux
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
