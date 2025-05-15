@@ -38,14 +38,14 @@ impl Printer {
                 .map(|item| item.to_string())
                 .collect::<Vec<_>>()
                 .join(" ");
-            println!("{}", joined_string);
+            eprintln!("{}", joined_string);
         } else {
             let joined_string = message_parts
                 .into_iter()
                 .map(|item| item.normal().clear().to_string())
                 .collect::<Vec<_>>()
                 .join(" ");
-            println!("{}", joined_string);
+            eprintln!("{}", joined_string);
         }
     }
 }
