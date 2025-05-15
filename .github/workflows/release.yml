@@ -1,4 +1,4 @@
-name: Release macOS binary
+name: Release macOS/linux binaries
 
 on:
   push:
@@ -9,8 +9,12 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
-    runs-on: macos-latest
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: [x86_64-unknown-linux-gnu, x86_64-apple-darwin]
 
     steps:
       - name: Checkout code
@@ -20,18 +24,10 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
+          components: clippy, rustfmt
 
-      - name: Build release binary
-        run: cargo build --release
+      - name: Install target
+        run: rustup target add ${{ matrix.target }}
 
-      - name: Prepare binary for release
-        run: |
-          mkdir -p dist
-          cp target/release/feedline dist/feedline-macos
-
-      - name: Upload binary to GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/feedline-macos
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build
+        run: cargo build --target ${{ matrix.target }} --release
