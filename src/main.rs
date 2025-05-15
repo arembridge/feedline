@@ -67,13 +67,7 @@ fn main() {
         if verbosity_min > printer.verbosity_level {
             continue;
         };
-        let mut message_parts = result.get_message_parts();
-        if !printer.use_color {
-            message_parts = message_parts
-                .into_iter()
-                .map(|item| item.normal())
-                .collect();
-        }
+        let message_parts = result.get_message_parts();
         printer.print(
             message_parts,
             verbosity_min,
