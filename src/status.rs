@@ -27,8 +27,8 @@ impl Ord for STATUS {
         use STATUS::*;
         let rank = |s| match s {
             SUCCESS => 0,
-            WARN => 1,
-            SKIP => 2,
+            SKIP => 1,
+            WARN => 2,
             ERROR => 3,
         };
         rank(*self).cmp(&rank(*other))
