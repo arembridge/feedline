@@ -54,7 +54,7 @@ fn fix_file(filepath: String) -> FeedlineResult {
     if path.is_dir() {
         return FeedlineResult {
             file: filepath,
-            status: STATUS::SKIP,
+            status: STATUS::WARN,
             message: Some("path is a directory".to_string()),
         };
     }
