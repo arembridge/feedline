@@ -73,4 +73,9 @@ fn main() {
         printer.eprint(message_parts, verbosity_min);
     }
 
+    if !io::stdout().is_terminal() {
+        for file in command_args.files {
+            printer.print(vec![file.into()], Verbosity::QUIET);
+        }
+    }
 }
