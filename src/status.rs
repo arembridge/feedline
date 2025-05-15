@@ -15,8 +15,8 @@ impl STATUS {
         use STATUS::*;
         match self {
             SUCCESS => "SUCCESS".green(),
-            WARN => "WARN".color("orange"),
             SKIP => "SKIP".yellow(),
+            WARN => "WARN".red(),
             ERROR => "ERROR".red(),
         }
     }
