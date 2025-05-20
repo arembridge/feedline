@@ -7,6 +7,7 @@ mod verbosity;
 
 use colored::Colorize;
 use rayon::ThreadPoolBuilder;
+use num_cpus;
 
 use feedline::fix_files_par;
 use verbosity::Verbosity;
@@ -15,8 +16,9 @@ use crate::status::STATUS;
 use args::parse_args;
 
 fn main() {
+    let num_threads = num_cpus::get();
     ThreadPoolBuilder::new()
-        .num_threads(8)
+        .num_threads(num_threads)
         .build_global()
         .expect("Failed to build thread pool");
 

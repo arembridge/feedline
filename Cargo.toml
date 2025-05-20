@@ -11,4 +11,5 @@ repository = "https://github.com/yourusername/feedline"
 clap = { version = "4.5.37", features = ["derive"] }
 colored = "3.0.0"
 colorize = "0.1.0"
+num_cpus = "1.16.0"
 rayon = "1.10.0"
