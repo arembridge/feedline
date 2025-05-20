@@ -6,14 +6,20 @@ mod status;
 mod verbosity;
 
 use colored::Colorize;
+use rayon::ThreadPoolBuilder;
 
+use feedline::fix_files_par;
 use verbosity::Verbosity;
 
-use crate::feedline::fix_files;
 use crate::status::STATUS;
 use args::parse_args;
 
 fn main() {
+    ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build_global()
+        .expect("Failed to build thread pool");
+
     let command_args = parse_args();
     let printer = print::Printer::new(&command_args.color, command_args.verbosity.clone());
 
@@ -25,7 +31,7 @@ fn main() {
                 .clone() // Fix clone
                 .into_iter()
                 .map(|item| item.normal())
-                .collect()
+                .collect(),
         ]
         .concat(),
         Verbosity::VERBOSE,
@@ -52,7 +58,7 @@ fn main() {
         Verbosity::VERBOSE,
     );
 
-    let mut results = fix_files(command_args.files.clone());
+    let mut results = fix_files_par(command_args.files.clone());
     if command_args.sort {
         results.sort();
     }
@@ -68,9 +74,6 @@ fn main() {
             continue;
         };
         let message_parts = result.get_message_parts();
-        printer.print(
-            message_parts,
-            verbosity_min,
-        );
+        printer.print(message_parts, verbosity_min);
     }
 }

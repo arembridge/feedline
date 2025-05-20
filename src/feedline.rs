@@ -1,5 +1,6 @@
-use crate::status::STATUS;
 use crate::feedline_result::FeedlineResult;
+use crate::status::STATUS;
+use rayon::prelude::*;
 use std::{
     fs::OpenOptions,
     io::{Read, Seek, SeekFrom, Write},
@@ -92,4 +93,11 @@ pub fn fix_files(files: Vec<String>) -> Vec<FeedlineResult> {
         results.push(result);
     }
     results
+}
+
+pub fn fix_files_par(files: Vec<String>) -> Vec<FeedlineResult> {
+    files
+        .into_par_iter() // Rayon parallel iterator
+        .map(|file| fix_file(file))
+        .collect()
 }
